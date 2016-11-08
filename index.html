@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Java 值传递和引用传递 by VampireNote</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Java 值传递和引用传递</h1>
+        <h2>a</h2>
+        <a href="https://github.com/VampireNote/a" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <p>[TOC]</p>
+
+<p>Java 传递参数到底是值传递还是引用传递呢？</p>
+
+<p>先看一段代码：</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">public</span> class <span class="pl-smi">JavaTest</span> {
+    <span class="pl-k">private</span> <span class="pl-k">int</span> paraInt <span class="pl-k">=</span> <span class="pl-c1">10</span>;
+
+    <span class="pl-k">public</span> <span class="pl-k">int</span> getParaInt() {
+        <span class="pl-k">return</span> paraInt;
+    }
+    <span class="pl-k">public</span> <span class="pl-k">void</span> setParaInt(<span class="pl-k">int</span> paraInt) {
+        <span class="pl-v">this</span><span class="pl-k">.</span>paraInt <span class="pl-k">=</span> paraInt;
+    }
+    <span class="pl-k">public</span> <span class="pl-k">void</span> tryChangeBasicData(<span class="pl-k">int</span> para){
+        para <span class="pl-k">=</span> <span class="pl-c1">100</span>;
+        <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(<span class="pl-s"><span class="pl-pds">"</span>inner tryChangeBasicData method:para = <span class="pl-pds">"</span></span> <span class="pl-k">+</span> para);
+    }
+    <span class="pl-k">public</span> <span class="pl-k">void</span> tryChangeObject(<span class="pl-smi">JavaTest</span> jTest){
+        jTest<span class="pl-k">.</span>setParaInt(<span class="pl-c1">100</span>);
+        <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(<span class="pl-s"><span class="pl-pds">"</span>inner tryChangeObject method:para = <span class="pl-pds">"</span></span> <span class="pl-k">+</span> jTest<span class="pl-k">.</span>getParaInt());
+    }
+    
+    <span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-k">void</span> main(<span class="pl-k">String</span>[] args) {
+        <span class="pl-smi">JavaTest</span> jTest <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">JavaTest</span>();
+
+        <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(<span class="pl-s"><span class="pl-pds">"</span>基本数据类型作为参数传递<span class="pl-pds">"</span></span>);
+        <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(<span class="pl-s"><span class="pl-pds">"</span>before method: <span class="pl-pds">"</span></span> <span class="pl-k">+</span> jTest<span class="pl-k">.</span>getParaInt());
+        jTest<span class="pl-k">.</span>tryChangeBasicData(jTest<span class="pl-k">.</span>getParaInt());
+        <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(<span class="pl-s"><span class="pl-pds">"</span>after method: <span class="pl-pds">"</span></span> <span class="pl-k">+</span> jTest<span class="pl-k">.</span>getParaInt());
+
+        <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(<span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>);
+
+        <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(<span class="pl-s"><span class="pl-pds">"</span>对象引用作为参数传递<span class="pl-pds">"</span></span>);
+        <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(<span class="pl-s"><span class="pl-pds">"</span>before method: <span class="pl-pds">"</span></span> <span class="pl-k">+</span> jTest<span class="pl-k">.</span>getParaInt());
+        jTest<span class="pl-k">.</span>tryChangeObject(jTest);
+        <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(<span class="pl-s"><span class="pl-pds">"</span>after method: <span class="pl-pds">"</span></span> <span class="pl-k">+</span> jTest<span class="pl-k">.</span>getParaInt());
+    }
+}</pre></div>
+
+<p>运行上段代码得到：</p>
+
+<pre><code>基本数据类型作为参数传递
+before method: 10
+inner tryChangeBasicData method:para = 100
+after method: 10
+***
+对象引用作为参数传递
+before method: 10
+inner tryChangeObject method:para = 100
+after method: 100
+</code></pre>
+
+<h1>
+<a id="传递基本类型" class="anchor" href="#%E4%BC%A0%E9%80%92%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a> 传递基本类型</h1>
+
+<p>实际上是对参数<code>A</code>做了一个值拷贝<code>B</code>，传递的参数是<code>B</code>，然后所有操作是针对<code>B</code>的，因此不会影响到原参数<code>A</code>。</p>
+
+<p>可以参考上端代码，<code>tryChangeBasicData()</code>前后<code>paraInt</code>值并没有改变。</p>
+
+<h1>
+<a id="传递对象引用" class="anchor" href="#%E4%BC%A0%E9%80%92%E5%AF%B9%E8%B1%A1%E5%BC%95%E7%94%A8" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a> 传递对象引用</h1>
+
+<p>实际上是对引用<code>X</code>做了一个拷贝引用<code>Y</code>，传递的参数是<code>Y</code>，所有操作都是针对<code>Y</code>的，但因为<code>X</code>和<code>Y</code>指向同一个地址，所以通过引用<code>Y</code>操作对象等同于使用<code>X</code>操作对象。</p>
+
+<p>可以参考上面代码，<code>tryChangeObject()</code>对<code>Y</code>指向的地址空间内的变量进行修改，<code>X</code>取得的变量值是修改后的值。</p>
+
+<h1>
+<a id="补充string类型" class="anchor" href="#%E8%A1%A5%E5%85%85string%E7%B1%BB%E5%9E%8B" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a> 补充：String 类型</h1>
+
+<p><code>String</code>在方法中作为参数传递，我们不用考虑传递的是引用还是值得拷贝，因为<code>String</code>本身一旦定义了就不可修改，做了“修改”（比如使用连接符做拼接）后就变成另外一个对象了，不会影响原对象。</p>
+
+<h1>
+<a id="总结一下" class="anchor" href="#%E6%80%BB%E7%BB%93%E4%B8%80%E4%B8%8B" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a> 总结一下</h1>
+
+<p>究竟是按值传递还是按引用传递，这点不重要，因为不同的人对这两个定义的理解不一样。</p>
+
+<p><em>真正需要明白的是：</em>
+<strong>基本数据类型（包括装箱的基本数据类型）传递的是值得拷贝，在方法中针对这个参数做任何事情都不会影响原参数；
+对象引用传递的是引用的拷贝，但是无论拷贝多少次，引用指向的地址从未变过，因此可以通过此引用的拷贝修改原对象的一些属性</strong></p>
+
+<p>所以当提起 Java 语言是值传递还是引用传递的时候，不妨换个理解方式，那就是传过去的对象或引用会不会影响原对象。</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/VampireNote/a/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/VampireNote/a/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/VampireNote/a"></a> is maintained by <a href="https://github.com/VampireNote">VampireNote</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
